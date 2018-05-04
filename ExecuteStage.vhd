@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity EXStage is port(Read1, Read2, EbMout,MbWout,ImmVal: in std_logic_vector(15 downto 0);
 		       Op: in std_logic_vector(4 downto 0);
 		       Cin,IMMen: in std_logic;
-		       FWDen: in std_logic_vector (1 downto 0);
+		       FWDsrc,FWDdst: in std_logic_vector (1 downto 0);
 		       F: out std_logic_vector(15 downto 0);
 		       ZF,NF,CF,VF: out std_logic);
 end entity;
@@ -26,17 +26,17 @@ begin
 
 	ALU0: ALU port map(A,B,Cin,Op,ALUout,VF,CF);
 
-	with FWDen select
+	with FWDsrc select
 	A <= Read1 when "00",
 	     EbMout when "01",
 	     MbWout when "10",
-	     X"0000" when others;
+	     MbWout when others;
 
-	with FWDen select
-	Binter <= Read1 when "00",
+	with FWDdst select
+	Binter <= Read2 when "00",
 	     EbMout when "01",
 	     MbWout when "10",
-	     X"0000" when others;
+	     MbWout when others;
 
 	with IMMen select
 	B <= Binter when '0',
