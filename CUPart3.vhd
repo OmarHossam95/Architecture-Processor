@@ -17,7 +17,7 @@ end entity;
 Architecture CUImp of CUPart3 is
 signal OutAnd :std_logic;
 begin
-OutAnd<=OPGroup(0) and OPGroup(1);
+OutAnd<=OPGroup(0) and (not(OPGroup(1)));
 RTN<=OP(3) and OutAnd;
 INTBegin<=INTMWB;
 JumpEn<=Stall;
