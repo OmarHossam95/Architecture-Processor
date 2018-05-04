@@ -1,13 +1,13 @@
 Library ieee;
 use ieee.std_logic_1164.all;
 
-entity CUPart3 is port(OpGroup: in std_logic_vector(1 downto 0);
+entity CUPart2 is port(OpGroup: in std_logic_vector(1 downto 0);
 		       Op: in std_logic_vector (4 downto 0);
 		       INT: in std_logic;
 		       ImmEn, SPwriteEn, SPsel, MemAddSel, MemWrSel, MemEn: out std_logic);
 end entity;
 
-architecture CU3Arch of CUPart3 is
+architecture CU2Arch of CUPart2 is
 signal LDM, SHL, RRC, PUSH, CALL, LDD, STD: std_logic;
 signal opGrp01, opGrp10, op2or3: std_logic;
 begin
