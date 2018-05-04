@@ -3,7 +3,7 @@ Use ieee.std_logic_1164.all;
 
 
 
-entity rgister_file is 
+entity register_file is 
 
 port( 
 port1_sel,port2_sel,w_sel : in std_logic_vector(2 downto 0);
@@ -19,7 +19,7 @@ end entity;
 
 
 
-Architecture rgister_file_imp of rgister_file is
+Architecture register_file_imp of register_file is
 signal out1,out2,out3,out5,out4,out6 : std_logic_vector(15 downto 0);
 signal e1,e2,e3,e4,e5,e6 :std_logic;
 
@@ -85,4 +85,4 @@ out4 when "011",
 out5 when "100",
  out6 when others;
 
-end Architecture rgister_file_imp;
+end Architecture register_file_imp;

@@ -6,8 +6,7 @@ use ieee.math_real.all;                 -- for the ceiling and log constant calc
 
 entity sp is 
 port( 
-clk,res,spEnable,spSel: in std_logic;
-dataIn:in std_logic_vector(15 downto 0);
+clk,rst,spEn,spSel: in std_logic;
 dataOut:out std_logic_vector(15 downto 0)
 
 
@@ -17,6 +16,7 @@ end entity;
 
 Architecture spImp of sp is
 signal outSpReg,outAdder : std_logic_vector(15 downto 0);
+signal spOutOfRange,spEnable: std_logic;
 
 Component my_nDFF is
 
@@ -28,10 +28,17 @@ end component;
 begin
 
 
-with spSel select  
- outAdder<=std_logic_vector( unsigned(outSpReg)+1) when '1',
- std_logic_vector(unsigned(outSpReg)-1) when others;
+with outSpReg&spSel select  
+spOutOfRange<= '0' when "00000000000000001",
+		       '0' when "11111111111111110",
+		       '1' when others;
+spEnable <= spEn and spOutOfRange;
 
-ro:my_nDFF  port map(clk,res,spEnable,outAdder,outSpReg);
+with spSel select
+outAdder <= std_logic_vector( unsigned(outSpReg)+1) when '0',
+ 	    std_logic_vector(unsigned(outSpReg)-1) when others;
+
+ro:my_nDFF  port map(clk,rst,spEnable,outAdder,outSpReg);
+dataOut <= outSpReg;
 
 end Architecture spImp;

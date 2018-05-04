@@ -8,7 +8,7 @@ use ieee.math_real.all;                 -- for the ceiling and log constant calc
 entity Fetch is
 	port (	
 			Read2,MemOut : in std_logic_vector (15 downto 0);
-			Clk,JmpEnable,Stall,Interept,Rtn,Rst : in std_logic; -- Rtn --> Return signal
+			Clk,JmpEnable,Stall,Interept,INTBegin,Rtn,Rst : in std_logic; -- Rtn --> Return signal
 			FetchOut : out std_logic_vector (15 downto 0) 
 
 	);
@@ -60,10 +60,10 @@ begin
 	mux1: mux2v1 port map (NewPCout,PCout,Stall,Mux1out);
 	mux2: mux2v1 port map (Mux1out,ShiftedRead2,JmpEnable,Mux2out);
 	mux3: mux2v1 port map (Mux2out,MemOut,Rtn,Mux3out);
-	mux4: mux4v1 port map (Mux3out,X"0001",X"0000",X"0000",Mux4Select,Mux4out);
+	mux4: mux2v1 port map (Mux3out,X"0001",INTBegin,Mux4out);
 	mux5: mux2v1 port map (IMout,X"FFFF",Interept,Mux5out);
 	Mux4Select <= Rst & Interept ;
-	NewPCout <= std_logic_vector(unsigned (PCout) + 2);
+	NewPCout <= std_logic_vector(unsigned (PCout) + 1);
 	ShiftedRead2 <= Read2(13 downto 0) & "00";
 	FetchOut <= Mux5out ;
 end Fetch_arc;
