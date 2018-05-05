@@ -6,8 +6,8 @@ use ieee.math_real.all;                 -- for the ceiling and log constant calc
 
 entity FDRegister is
 	port (Clk,Rst : in std_logic;
-		  FromFetch : in std_logic_vector (15 downto 0);
-		  ToDecode : out std_logic_vector (15 downto 0)
+		  FromFetch,PCplus1d : in std_logic_vector (15 downto 0);
+		  ToDecode,PCplus1q : out std_logic_vector (15 downto 0)
 	);
 end FDRegister;
 
@@ -21,4 +21,5 @@ architecture FDRegister_arc of FDRegister is
 	end component nbitRegister;
 begin
 FDBuffer : nbitRegister generic map(n=>16)port map (Clk,Rst,'1',FromFetch,ToDecode);
+PCplus1 : nbitRegister generic map(n=>16)port map (Clk,Rst,'1',PCplus1d,PCplus1q);
 end FDRegister_arc;

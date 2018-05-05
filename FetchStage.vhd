@@ -9,7 +9,7 @@ entity Fetch is
 	port (	
 			Read2,MemOut : in std_logic_vector (15 downto 0);
 			Clk,JmpEnable,Stall,Interept,INTBegin,Rtn,Rst : in std_logic; -- Rtn --> Return signal
-			FetchOut : out std_logic_vector (15 downto 0) 
+			FetchOut,PCplus1 : out std_logic_vector (15 downto 0)
 
 	);
 end Fetch;
@@ -52,18 +52,18 @@ architecture Fetch_arc of Fetch is
 	end component my_nDFF;
 	---------------------------------------------------------------------------- end of components
 	---------------------------------------------------------------------------- Signals
-	signal ShiftedRead2,Mux1out,Mux2out,Mux3out,Mux4out,Mux5out,PCout,NewPCout,IMout : std_logic_vector(15 downto 0); -- PCout : program counter output , IMout : instruction memory output
+	signal Mux1out,Mux2out,Mux3out,Mux4out,Mux5out,PCout,NewPCout,IMout : std_logic_vector(15 downto 0); -- PCout : program counter output , IMout : instruction memory output
 	Signal Mux4Select : std_logic_vector (1 downto 0);
 begin
 	ProgramCounter : my_nDFF port map (Clk,Rst,'1',mux4out,PCout);
 	InstructionMemory : Memory port map ( Clk,'0',PCout(9 downto 0),X"0000",IMout );
 	mux1: mux2v1 port map (NewPCout,PCout,Stall,Mux1out);
-	mux2: mux2v1 port map (Mux1out,ShiftedRead2,JmpEnable,Mux2out);
+	mux2: mux2v1 port map (Mux1out,Read2,JmpEnable,Mux2out);
 	mux3: mux2v1 port map (Mux2out,MemOut,Rtn,Mux3out);
 	mux4: mux2v1 port map (Mux3out,X"0001",INTBegin,Mux4out);
 	mux5: mux2v1 port map (IMout,X"FFFF",Interept,Mux5out);
 	Mux4Select <= Rst & Interept ;
 	NewPCout <= std_logic_vector(unsigned (PCout) + 1);
-	ShiftedRead2 <= Read2(13 downto 0) & "00";
-	FetchOut <= Mux5out ;
+	FetchOut <= Mux5out;
+	PCplus1 <= NewPCout;
 end Fetch_arc;

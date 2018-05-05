@@ -13,16 +13,17 @@ JmpEn,WB,WBCCR,Cen : out std_logic;
 
 OpGroup: in std_logic_vector(1 downto 0);
 
-INT: in std_logic;
 ImmEn, SPwriteEn, SPsel, MemAddSel, MemWrSel, MemEn: out std_logic;
-Stall,INTMWB:in std_logic;
-INTBegin,JumpEn,RTN:out std_logic
+Stall:in std_logic;
+INTBegin,JumpEn,RTN,ALUImmSel:out std_logic
 
 
 );
 end CU;
 
 architecture CUArc of CU is
+
+signal INT: std_logic;
 
 component CUPart1 is
 	port (
@@ -42,17 +43,20 @@ port(
 OPGroup: in std_logic_vector(1 downto 0);
 OP:in std_logic_vector(4 downto 0);
 
-Stall,INTMWB:in std_logic;
-INTBegin,JumpEn,RTN:out std_logic
+Stall,INT:in std_logic;
+INTBegin,RTN,ALUImmSel:out std_logic
 
 );
 end component;
 
 begin
+with OPGroup&OP select
+INT <= '1' when "1111111",
+       '0' when others;
 
 Part1:CUPart1  port map(OP,OPGroup,Z,N,C,JmpEn,WB,WBCCR,Cen);
 Part2:CUPart2  port map(OPGroup,OP,INT,ImmEn,SPwriteEn,SPsel,MemAddSel,MemWrSel,MemEn);
-Part3:CUPart3  port map(OPGroup,OP,Stall,INTMWB,INTBegin,JumpEn,RTN);
+Part3:CUPart3  port map(OPGroup,OP,Stall,INT,INTBegin,RTN,ALUImmSel);
 
 
 

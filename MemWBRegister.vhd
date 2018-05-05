@@ -7,9 +7,12 @@ use ieee.math_real.all;                 -- for the ceiling and log constant calc
 
 entity MemWBRegister is
 	port (Clk,Rst : in std_logic;
-		  FromMem1,FromMem2,FromMem3 : in std_logic_vector (15 downto 0);
-		  ToWB1,ToWB2,ToWB3 : out std_logic_vector (15 downto 0)
-	);
+	      MemOutd,ALUoutd,Immd: in std_logic_vector (15 downto 0);
+	      OPGroupd: in std_logic_vector(1 downto 0);
+	      ALUImmSeld: in std_logic;
+	      MemOutq,ALUoutq,Immq: out std_logic_vector (15 downto 0);
+	      OPGroupq: out std_logic_vector(1 downto 0);
+	      ALUImmSelq: out std_logic);
 end MemWBRegister;
 
 architecture MemWBRegister_arc of MemWBRegister is
@@ -20,9 +23,15 @@ architecture MemWBRegister_arc of MemWBRegister is
 		q : out std_logic_vector(n-1 downto 0));
 		
 	end component nbitRegister;
-begin
-MemWBBuffer1 : nbitRegister generic map(n=>16)port map (Clk,Rst,'1',FromMem1,ToWB1);
-MemWBBuffer2 : nbitRegister generic map(n=>16)port map (Clk,Rst,'1',FromMem2,ToWB2);
-MemWBBuffer3 : nbitRegister generic map(n=>16)port map (Clk,Rst,'1',FromMem3,ToWB3);
 
+	component my_DFF is
+		port( clk,rst, enable,d: in std_logic;
+		q : out std_logic);
+	end component;
+begin
+	MemOut: nbitRegister generic map(n=>16)port map (Clk,Rst,'1',MemOutd,MemOutq);
+	ALUOut: nbitRegister generic map(n=>16)port map (Clk,Rst,'1',ALUOutd,ALUOutq);
+	Imm: nbitRegister generic map(n=>16)port map (Clk,Rst,'1',Immd,Immq);
+	OPGroup: nbitRegister generic map(n=>2)port map (Clk,Rst,'1',OPGroupd,OPGroupq);
+	ALUImmSel: my_DFF port map(Clk,Rst,'1',ALUImmSeld,ALUImmSelq);
 end MemWBRegister_arc;
